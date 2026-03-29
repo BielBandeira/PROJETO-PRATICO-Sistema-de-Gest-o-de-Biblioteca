@@ -39,6 +39,7 @@ public class Mainn {
             System.out.println("8 - Listar todos os exemplares disponíveis de um livro");
             System.out.println("9 - Registrar um empréstimo de livro");
             System.out.println("10 - Registrar uma devolução de livro");
+            System.out.println("11 - Prolongar um empréstimo");
             System.out.println("-----DIGITE 0 PARA SAIR-----");
 
             opcao = input.nextInt();
@@ -102,6 +103,12 @@ public class Mainn {
                 case 10:
 
                     registrarDevolucaoLivro();
+
+                    break;
+
+                case 11:
+
+                    prolongarEmprestimo();
 
                     break;
 
@@ -310,6 +317,49 @@ public class Mainn {
 
         emp_escolhido.devolver();
         System.out.println("Devolução realizada!");
+
+    }
+
+    // Prolongar empréstimo
+
+    public static void prolongarEmprestimo(){
+
+        System.out.print("---Deseja prolongar a data de devolução de qual empréstimo?:---");
+        System.out.print("\n");
+        System.out.print("\n");
+        for (int i = 0; i < emprestimos.size(); i++) {
+
+            Exemplar exemplarEmprestimo = emprestimos.get(i).getExemplar();
+            String tituloLivroEmp = null;
+
+            for(Livro l : livros){
+                for(Exemplar e : l.getExemplares()){
+                    if (e == exemplarEmprestimo) {
+                        tituloLivroEmp = l.getTitulo();
+                        break;
+                    }
+                }
+            }
+
+            Usuario usuario_emprestimo = emprestimos.get(i).getUsuario();
+            LocalDate data_do_emprestimo = emprestimos.get(i).getDataEmprestimo();
+            LocalDate data_p_devolucao = emprestimos.get(i).getDataPrevistaDevolucao();
+
+            System.out.println(i + " - Livro: " + tituloLivroEmp + " / " + usuario_emprestimo + " / Data do empréstimo: " + data_do_emprestimo + " / Data da devolução: " + data_p_devolucao);
+
+            if (i == (emprestimos.size() - 1)) {
+                System.out.print("\n");
+            }
+        }
+        System.out.print("Emprestimo: ");
+        int escolhaE = input.nextInt();
+        Emprestimo emp_escolhido = emprestimos.get(escolhaE);
+
+        System.out.println("Em quantos dias?: ");
+        int diasAProlongar = input.nextInt();
+
+        emp_escolhido.prolongarDataDevEmprestimo(diasAProlongar);
+        System.out.println("Data de devolução do empréstimo" + escolhaE + "alterada para: " + emp_escolhido.getDataPrevistaDevolucao());
 
     }
 
