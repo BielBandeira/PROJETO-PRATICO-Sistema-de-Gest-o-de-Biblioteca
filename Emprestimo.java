@@ -46,5 +46,10 @@ public class Emprestimo {
         return this.dataPrevistaDevolucao;
     }
 
+    public LocalDate prolongarDataDevEmprestimo() {
+        this.dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(7);
+        return this.dataPrevistaDevolucao;
+    }
+
 
 }
