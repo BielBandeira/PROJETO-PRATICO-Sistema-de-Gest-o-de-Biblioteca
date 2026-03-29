@@ -1,5 +1,8 @@
 Fazendo ainda!! (não finalizada)
 
+import java.time.LocalDate;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -13,6 +16,7 @@ public class Mainn {
     public static ArrayList<Usuario> usuarios = new ArrayList<>();
     public static ArrayList<Funcionario> funcionarios = new ArrayList<>();
     public static ArrayList<Livro> livros = new ArrayList<>();
+    public static ArrayList<Emprestimo> emprestimos = new ArrayList<>();
     // public static ArrayList<Exemplar> exemplares = new ArrayList<>();
     public static Scanner input = new Scanner(System.in);
 
@@ -86,6 +90,18 @@ public class Mainn {
                 case 8:
 
                     listarExemplaresLivro();
+
+                    break;
+
+                case 9:
+
+                    registrarEmprestimo();
+
+                    break;
+
+                case 10:
+
+                    registrarDevolucaoLivro();
 
                     break;
 
@@ -191,6 +207,112 @@ public class Mainn {
 
     }
 
+    // Registrar emprestimo de Livro
+
+    public static void registrarEmprestimo() {
+
+        // Selecionar exemplar do empréstimo
+        Exemplar exemplar = null;
+
+        System.out.println("\nRegistrar novo empréstimo: ");
+        System.out.print("\n");
+        System.out.print("---Deseja registrar um empréstimo de qual exemplar:---");
+        System.out.print("\n");
+        System.out.print("\n");
+        do {
+            for (int i = 0; i < livros.size(); i++) {
+                System.out.println(i + " - " + livros.get(i).getTitulo());
+                if (i == (livros.size() - 1)) {
+                    System.out.print("\n");
+                }
+            }
+
+            System.out.print("Livro: ");
+            int escolhaL = input.nextInt();
+            Livro emp_livro = livros.get(escolhaL);
+
+            for (Exemplar e : emp_livro.getExemplares()) {
+                if (e.getDisponivel()) {
+                    exemplar = e;
+                    break;
+                }
+            }
+
+            if (exemplar == null) {
+                System.out.println("Este livro não possui exemplares disponíveis!");
+            }
+
+        } while (exemplar == null);
+
+        // Selecionar usuário do empréstimo
+
+        System.out.print("---O empréstimo será para qual usuário:---");
+        System.out.print("\n");
+        System.out.print("\n");
+        for (int i = 0; i < usuarios.size(); i++) {
+            System.out.println(i + " - " + usuarios.get(i).getNome());
+            if (i == (usuarios.size() - 1)) {
+                System.out.print("\n");
+            }
+        }
+        System.out.print("Usuário: ");
+        int escolhaU = input.nextInt();
+        Usuario emp_user = usuarios.get(escolhaU);
+
+        // Selecionar data do empréstimo
+
+        input.nextLine();
+
+        System.out.print("Digite a data do empréstimo: ");
+        String data_emp_string = input.nextLine();
+        DateTimeFormatter formatador_data = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dataEmprestimo = LocalDate.parse(data_emp_string, formatador_data);
+
+        Emprestimo emprestimo = new Emprestimo(exemplar, emp_user, dataEmprestimo);
+        emprestimos.add(emprestimo);
+
+    }
+
+    // Registrar devolução de livro
+
+    public static void registrarDevolucaoLivro(){
+        
+        System.out.print("---Deseja realizar e devolução de qual empréstimo?:---");
+        System.out.print("\n");
+        System.out.print("\n");
+        for (int i = 0; i < emprestimos.size(); i++) {
+
+            Exemplar exemplarEmprestimo = emprestimos.get(i).getExemplar();
+            String tituloLivroEmp = null;
+
+            for(Livro l : livros){
+                for(Exemplar e : l.getExemplares()){
+                    if (e == exemplarEmprestimo) {
+                        tituloLivroEmp = l.getTitulo();
+                        break;
+                    }
+                }
+            }
+
+            Usuario usuario_emprestimo = emprestimos.get(i).getUsuario();
+            LocalDate data_do_emprestimo = emprestimos.get(i).getDataEmprestimo();
+            LocalDate data_p_devolucao = emprestimos.get(i).getDataPrevistaDevolucao();
+
+            System.out.println(i + " - Livro: " + tituloLivroEmp + " / " + usuario_emprestimo + " / Data do empréstimo: " + data_do_emprestimo + " / Data da devolução: " + data_p_devolucao);
+
+            if (i == (emprestimos.size() - 1)) {
+                System.out.print("\n");
+            }
+        }
+        System.out.print("Emprestimo: ");
+        int escolhaE = input.nextInt();
+        Emprestimo emp_escolhido = emprestimos.get(escolhaE);
+
+        emp_escolhido.devolver();
+        System.out.println("Devolução realizada!");
+
+    }
+
     // Seção de cadastros
 
     // Usuario
@@ -293,17 +415,31 @@ public class Mainn {
 
     public static void inicio() {
 
-        Usuario usuario = new Usuario("Alex", "1995", "11912345678", 1);
+        Usuario usuario1 = new Usuario("Alex", "1995", "11912345678", 1);
+        Usuario usuario2 = new Usuario("Arthur", "2001", "11912345678", 2);
+        Usuario usuario3 = new Usuario("Camila", "1997", "11912345678", 3);
         Funcionario funcionario = new Funcionario("Fernanda", "1998", "11912345678", 2);
-        Livro livro = new Livro("Dom Casmurro", "Machado de Assis", 1889, 1);
+        Livro livro1 = new Livro("Dom Casmurro", "Machado de Assis", 1899, 1);
+        Livro livro2 = new Livro("O Pequeno Príncipe", "Antoine de Saint-Exupéry", 1943, 2);
+        Livro livro3 = new Livro("Dom Quixote", "Miguel de Cervantes", 1605, 3);
         Exemplar exemplar = new Exemplar(1, true);
+        Emprestimo emprestimo1 = new Emprestimo(exemplar, usuario2, LocalDate.now());
+        Emprestimo emprestimo2 = new Emprestimo(exemplar, usuario1, LocalDate.now());
+        Emprestimo emprestimo3 = new Emprestimo(exemplar, usuario3, LocalDate.now());
 
-        livro.adicionarExemplar(exemplar);
-        livro.adicionarExemplar(exemplar);
+        livro1.adicionarExemplar(exemplar);
+        livro1.adicionarExemplar(exemplar);
 
-        usuarios.add(usuario);
+        usuarios.add(usuario1);
+        usuarios.add(usuario2);
+        usuarios.add(usuario3);
         funcionarios.add(funcionario);
-        livros.add(livro);
+        livros.add(livro1);
+        livros.add(livro2);
+        livros.add(livro3);
+        emprestimos.add(emprestimo1);
+        emprestimos.add(emprestimo2);
+        emprestimos.add(emprestimo3);
 
     }
 
