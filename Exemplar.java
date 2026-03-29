@@ -1,50 +1,74 @@
-import java.time.LocalDate;
+import java.util.ArrayList;
 
-public class Emprestimo {
-    private Exemplar exemplar;
-    private Usuario usuario;
-    private LocalDate dataEmprestimo;
-    private LocalDate dataPrevistaDevolucao;
-    private LocalDate dataDevolvida;
+public class Exemplar{
+    private int codigoExemplar;
+    private boolean disponivel;
 
-    public Emprestimo(Exemplar exemplar, Usuario usuario, LocalDate dataEmprestimo) {
-        this.exemplar = exemplar;
-        this.usuario = usuario;
-        this.dataEmprestimo = dataEmprestimo;
-        this.dataPrevistaDevolucao = dataEmprestimo.plusDays(15);
-
-        exemplar.setDisponivel(false);
-        System.out.println("Exemplar emprestado.");
+    public Exemplar(int codigoExemplar, boolean disponivel) {
+        this.codigoExemplar = codigoExemplar;
+        this.disponivel = disponivel;
     }
 
-    public void devolver() {
-        this.dataDevolvida = LocalDate.now();
-        exemplar.setDisponivel(true);
+    public void mostrarExemplar(){
+        System.out.println("Código do exemplar: " + codigoExemplar);
+        System.out.println("Disponível: " + disponivel);
+    }
+    
+    public int getcodigoExemplar(){
+        return codigoExemplar; 
+    }
+    public boolean getDisponivel(){
+        return disponivel;
+    }
+    public void setDisponivel(boolean disponivel){
+        this.disponivel = disponivel;
+    }
+}
 
-        System.out.println("Devolução realizada em: " + dataDevolvida);
-        System.out.println("Exemplar disponível.");
+class Livro{
+    private int codigoLivro;
+    private String titulo;
+    private String autor;
+    private int anoDePublicacao;
+
+    private ArrayList <Exemplar> exemplares;
+
+    public Livro(String titulo, String autor, int anoDePublicacao, int codigoLivro){
+        this.codigoLivro = codigoLivro;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.anoDePublicacao = anoDePublicacao;
+        this.exemplares = new ArrayList<>();
+
+    }
+    public int getCodigoLivro(){
+        return codigoLivro;
+    }
+    public String getTitulo(){
+        return titulo;
+    }
+    public String getAutor(){
+        return autor;
+    }
+    public int getAnoDePublicacao(){
+        return anoDePublicacao;
+    }
+    public void adicionarExemplar(Exemplar exemplar){
+        exemplares.add(exemplar);
     }
 
-    public Exemplar getExemplar() {
-        return exemplar;
+    public ArrayList<Exemplar> getExemplares() {
+        return exemplares;
     }
 
-    public Usuario getUsuario(){
-        return usuario;
+    public void mostrarLivro(){
+        System.out.println("Código do Livro: " + codigoLivro);
+        System.out.println("Título: " + titulo);
+        System.out.println("Autor: " + autor);
+        System.out.println("Ano de Publicação: " + anoDePublicacao);
+        System.out.println("Exemplares:");
+        for (Exemplar exemplar : exemplares) {
+            System.out.println("- Código do Exemplar: " + exemplar.getcodigoExemplar() + ", Disponível: " + exemplar.getDisponivel());
+        }
     }
-
-    public LocalDate getDataEmprestimo() {
-        return dataEmprestimo;
-    }
-
-    public LocalDate getDataPrevistaDevolucao() {
-        return dataPrevistaDevolucao;
-    }
-
-    public LocalDate prolongarDataDevEmprestimo(int dias) {
-        this.dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(dias);
-        return this.dataPrevistaDevolucao;
-    }
-
-
 }

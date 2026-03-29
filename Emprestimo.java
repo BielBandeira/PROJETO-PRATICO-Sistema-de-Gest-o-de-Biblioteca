@@ -7,10 +7,10 @@ public class Emprestimo {
     private LocalDate dataPrevistaDevolucao;
     private LocalDate dataDevolvida;
 
-    public Emprestimo(Exemplar exemplar, Usuario usuario) {
+    public Emprestimo(Exemplar exemplar, Usuario usuario, LocalDate dataEmprestimo) {
         this.exemplar = exemplar;
         this.usuario = usuario;
-        this.dataEmprestimo = LocalDate.now();
+        this.dataEmprestimo = dataEmprestimo;
         this.dataPrevistaDevolucao = dataEmprestimo.plusDays(15);
 
         exemplar.setDisponivel(false);
@@ -29,6 +29,10 @@ public class Emprestimo {
         return exemplar;
     }
 
+    public Usuario getUsuario(){
+        return usuario;
+    }
+
     public LocalDate getDataEmprestimo() {
         return dataEmprestimo;
     }
@@ -36,4 +40,11 @@ public class Emprestimo {
     public LocalDate getDataPrevistaDevolucao() {
         return dataPrevistaDevolucao;
     }
+
+    public LocalDate prolongarDataDevEmprestimo(int dias) {
+        this.dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(dias);
+        return this.dataPrevistaDevolucao;
+    }
+
+
 }
