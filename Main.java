@@ -1,6 +1,3 @@
-Fazendo ainda!! (não finalizada)
-
-import java.time.LocalDate;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,7 +8,7 @@ import java.util.Scanner;
 //Gabriel Bandeira – 10748004
 //Filipe Mizael – 10748000
 
-public class Mainn {
+public class Main {
 
     public static ArrayList<Usuario> usuarios = new ArrayList<>();
     public static ArrayList<Funcionario> funcionarios = new ArrayList<>();
@@ -36,10 +33,11 @@ public class Mainn {
             System.out.println("5 - Buscar Livro");
             System.out.println("6 - Buscar Exemplar");
             System.out.println("7 - Listar todos os usuários");
-            System.out.println("8 - Listar todos os exemplares disponíveis de um livro");
-            System.out.println("9 - Registrar um empréstimo de livro");
-            System.out.println("10 - Registrar uma devolução de livro");
-            System.out.println("11 - Prolongar um empréstimo");
+            System.out.println("8 - Listar todos os livros");
+            System.out.println("9 - Listar todos os exemplares disponíveis de um livro");
+            System.out.println("10 - Registrar um empréstimo de livro");
+            System.out.println("11 - Registrar uma devolução de livro");
+            System.out.println("12 - Prolongar um empréstimo");
             System.out.println("-----DIGITE 0 PARA SAIR-----");
 
             opcao = input.nextInt();
@@ -90,23 +88,29 @@ public class Mainn {
 
                 case 8:
 
-                    listarExemplaresLivro();
+                    listarLivros();
 
                     break;
 
                 case 9:
 
-                    registrarEmprestimo();
+                    listarExemplaresLivro();
 
                     break;
 
                 case 10:
 
-                    registrarDevolucaoLivro();
+                    registrarEmprestimo();
 
                     break;
 
                 case 11:
+
+                    registrarDevolucaoLivro();
+
+                    break;
+
+                case 12:
 
                     prolongarEmprestimo();
 
@@ -126,7 +130,7 @@ public class Mainn {
     // Buscar livro
 
     public static void buscarLivro() {
-        System.out.println("\n Buscar livro (pelo código): ");
+        System.out.println("\nBuscar livro (pelo código): ");
 
         System.out.print("Digite o código do livro que deseja buscar: ");
         int cdg_livro = input.nextInt();
@@ -135,13 +139,15 @@ public class Mainn {
 
         for (Livro l : livros) {
             if (l.getCodigoLivro() == cdg_livro) {
+                encontrado = true;
                 System.out.println("\n----Informações do livro----\n");
                 l.mostrarLivro();
-                System.out.println("\n");
             }
         }
 
-        if (encontrado == false) {
+        System.out.println("\n");
+
+        if (!encontrado) {
             System.out.println("Livro respectivo não encontrado!");
         }
 
@@ -153,7 +159,7 @@ public class Mainn {
 
     public static void buscarExemplar() {
 
-        System.out.println("\n Buscar exemplar (pelo código): ");
+        System.out.println("\nBuscar exemplar (pelo código): ");
 
         System.out.print("Digite o código do exemplar que deseja buscar: ");
         int cdg_exemplar = input.nextInt();
@@ -163,6 +169,7 @@ public class Mainn {
         for (Livro l : livros) {
             for (Exemplar e : l.getExemplares()) {
                 if (e.getcodigoExemplar() == cdg_exemplar) {
+                    encontrado = true;
                     System.out.println("\n----Informações do exemplar----\n");
                     e.mostrarExemplar();
                     System.out.println("\n");
@@ -189,6 +196,17 @@ public class Mainn {
 
     }
 
+    // Listar usuários
+
+    public static void listarLivros() {
+
+        for (Livro l : livros) {
+            System.out.println("\n----Informações do livro----");
+            l.mostrarLivro();
+        }
+
+    }
+
     // Listar exemplares de um livro
 
     public static void listarExemplaresLivro() {
@@ -202,11 +220,13 @@ public class Mainn {
             if (l.getCodigoLivro() == cdg_livro) {
                 encontrado = true;
 
-                System.out.println("\n----Livro----\n");
+                System.out.println("\n----Livro----");
                 l.mostrarLivro();
 
             }
         }
+
+        System.out.println("\n");
 
         if (encontrado == false) {
             System.out.println("Exemplar não encontrado!");
@@ -238,52 +258,56 @@ public class Mainn {
             int escolhaL = input.nextInt();
             Livro emp_livro = livros.get(escolhaL);
 
+            boolean lDisponivelencontrado = false;
+
             for (Exemplar e : emp_livro.getExemplares()) {
                 if (e.getDisponivel()) {
                     exemplar = e;
-                    break;
+                    lDisponivelencontrado = true;
+
+                    // Selecionar usuário do empréstimo
+
+                    System.out.print("---O empréstimo será para qual usuário:---");
+                    System.out.print("\n");
+                    System.out.print("\n");
+                    for (int i = 0; i < usuarios.size(); i++) {
+                        System.out.println(i + " - " + usuarios.get(i).getNome());
+                        if (i == (usuarios.size() - 1)) {
+                            System.out.print("\n");
+                        }
+                    }
+                    System.out.print("Usuário: ");
+                    int escolhaU = input.nextInt();
+                    Usuario emp_user = usuarios.get(escolhaU);
+
+                    // Selecionar data do empréstimo
+
+                    input.nextLine();
+
+                    System.out.print("Digite a data do empréstimo: ");
+                    String data_emp_string = input.nextLine();
+                    DateTimeFormatter formatador_data = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    LocalDate dataEmprestimo = LocalDate.parse(data_emp_string, formatador_data);
+
+                    Emprestimo emprestimo = new Emprestimo(exemplar, emp_user, dataEmprestimo);
+                    emprestimos.add(emprestimo);
                 }
+
             }
 
-            if (exemplar == null) {
+            if (!lDisponivelencontrado) {
                 System.out.println("Este livro não possui exemplares disponíveis!");
+                break;
             }
 
         } while (exemplar == null);
-
-        // Selecionar usuário do empréstimo
-
-        System.out.print("---O empréstimo será para qual usuário:---");
-        System.out.print("\n");
-        System.out.print("\n");
-        for (int i = 0; i < usuarios.size(); i++) {
-            System.out.println(i + " - " + usuarios.get(i).getNome());
-            if (i == (usuarios.size() - 1)) {
-                System.out.print("\n");
-            }
-        }
-        System.out.print("Usuário: ");
-        int escolhaU = input.nextInt();
-        Usuario emp_user = usuarios.get(escolhaU);
-
-        // Selecionar data do empréstimo
-
-        input.nextLine();
-
-        System.out.print("Digite a data do empréstimo: ");
-        String data_emp_string = input.nextLine();
-        DateTimeFormatter formatador_data = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate dataEmprestimo = LocalDate.parse(data_emp_string, formatador_data);
-
-        Emprestimo emprestimo = new Emprestimo(exemplar, emp_user, dataEmprestimo);
-        emprestimos.add(emprestimo);
 
     }
 
     // Registrar devolução de livro
 
-    public static void registrarDevolucaoLivro(){
-        
+    public static void registrarDevolucaoLivro() {
+
         System.out.print("---Deseja realizar e devolução de qual empréstimo?:---");
         System.out.print("\n");
         System.out.print("\n");
@@ -292,8 +316,8 @@ public class Mainn {
             Exemplar exemplarEmprestimo = emprestimos.get(i).getExemplar();
             String tituloLivroEmp = null;
 
-            for(Livro l : livros){
-                for(Exemplar e : l.getExemplares()){
+            for (Livro l : livros) {
+                for (Exemplar e : l.getExemplares()) {
                     if (e == exemplarEmprestimo) {
                         tituloLivroEmp = l.getTitulo();
                         break;
@@ -305,7 +329,8 @@ public class Mainn {
             LocalDate data_do_emprestimo = emprestimos.get(i).getDataEmprestimo();
             LocalDate data_p_devolucao = emprestimos.get(i).getDataPrevistaDevolucao();
 
-            System.out.println(i + " - Livro: " + tituloLivroEmp + " / " + usuario_emprestimo + " / Data do empréstimo: " + data_do_emprestimo + " / Data da devolução: " + data_p_devolucao);
+            System.out.println(i + " - Livro: " + tituloLivroEmp + " / " + usuario_emprestimo
+                    + " / Data do empréstimo: " + data_do_emprestimo + " / Data da devolução: " + data_p_devolucao);
 
             if (i == (emprestimos.size() - 1)) {
                 System.out.print("\n");
@@ -322,7 +347,7 @@ public class Mainn {
 
     // Prolongar empréstimo
 
-    public static void prolongarEmprestimo(){
+    public static void prolongarEmprestimo() {
 
         System.out.print("---Deseja prolongar a data de devolução de qual empréstimo?:---");
         System.out.print("\n");
@@ -332,8 +357,8 @@ public class Mainn {
             Exemplar exemplarEmprestimo = emprestimos.get(i).getExemplar();
             String tituloLivroEmp = null;
 
-            for(Livro l : livros){
-                for(Exemplar e : l.getExemplares()){
+            for (Livro l : livros) {
+                for (Exemplar e : l.getExemplares()) {
                     if (e == exemplarEmprestimo) {
                         tituloLivroEmp = l.getTitulo();
                         break;
@@ -345,7 +370,8 @@ public class Mainn {
             LocalDate data_do_emprestimo = emprestimos.get(i).getDataEmprestimo();
             LocalDate data_p_devolucao = emprestimos.get(i).getDataPrevistaDevolucao();
 
-            System.out.println(i + " - Livro: " + tituloLivroEmp + " / " + usuario_emprestimo + " / Data do empréstimo: " + data_do_emprestimo + " / Data da devolução: " + data_p_devolucao);
+            System.out.println(i + " - Livro: " + tituloLivroEmp + " / " + usuario_emprestimo
+                    + " / Data do empréstimo: " + data_do_emprestimo + " / Data da devolução: " + data_p_devolucao);
 
             if (i == (emprestimos.size() - 1)) {
                 System.out.print("\n");
@@ -355,11 +381,26 @@ public class Mainn {
         int escolhaE = input.nextInt();
         Emprestimo emp_escolhido = emprestimos.get(escolhaE);
 
-        System.out.println("Em quantos dias?: ");
-        int diasAProlongar = input.nextInt();
+        System.out.println("Deseja prolongar o empréstimo em 1 semana ou escolher em quantos dias?: ");
+        System.out.println("1 - Prolongar em 1 semana");
+        System.out.println("2 - Quero escolher a quantidade de dias para prolongar");
+        int escolha_prlng = input.nextInt();
 
-        emp_escolhido.prolongarDataDevEmprestimo(diasAProlongar);
-        System.out.println("Data de devolução do empréstimo" + escolhaE + "alterada para: " + emp_escolhido.getDataPrevistaDevolucao());
+        if (escolha_prlng == 1) {
+            emp_escolhido.prolongarDataDevEmprestimo();
+            System.out.println("Data de devolução do empréstimo " + escolhaE + " alterada para (+1 semana): "
+                    + emp_escolhido.getDataPrevistaDevolucao());
+        } else if (escolha_prlng == 2) {
+            System.out.println("Em quantos dias?: ");
+            int diasAProlongar = input.nextInt();
+
+            emp_escolhido.prolongarDataDevEmprestimo(diasAProlongar);
+            System.out.println("Data de devolução do empréstimo " + escolhaE + " alterada para: "
+                    + emp_escolhido.getDataPrevistaDevolucao());
+
+        } else {
+            System.out.println("Digite uma opção válida!");
+        }
 
     }
 
@@ -368,7 +409,8 @@ public class Mainn {
     // Usuario
 
     public static void cadastrarUsuario() {
-        System.out.println("\n Cadastro de Usuário: ");
+
+        System.out.println("\nCadastro de Usuário: ");
 
         System.out.print("Nome completo: ");
         String nome = input.nextLine();
@@ -378,18 +420,23 @@ public class Mainn {
         String telefone = input.nextLine();
         System.out.print("Registro de usuário (ID único): ");
         int id = input.nextInt();
-        input.nextLine();
+        for (Usuario u : usuarios) {
+            if (u.getId() == id) {
+                System.out.println("Erro: já existe um usuário com o ID " + id + "!");
+                return;
+            }
+
+        }
 
         Usuario usuario = new Usuario(nome, data_nasc, telefone, id);
         usuarios.add(usuario);
-
         System.out.println("Usuário cadastrado com sucesso!");
 
     }
 
     // Funcionario
     public static void cadastrarFuncionario() {
-        System.out.println("\n Cadastro de Funcionário: ");
+        System.out.println("\nCadastro de Funcionário: ");
 
         System.out.print("Nome completo: ");
         String nome = input.nextLine();
@@ -399,11 +446,16 @@ public class Mainn {
         String telefone = input.nextLine();
         System.out.print("Registro de Funcionário (ID único): ");
         int id = input.nextInt();
-        input.nextLine();
+        for (Funcionario f : funcionarios) {
+            if (f.getId() == id) {
+                System.out.println("Erro: já existe um funcionário com o ID " + id + "!");
+                return;
+            }
+
+        }
 
         Funcionario funcionario = new Funcionario(nome, data_nasc, telefone, id);
         funcionarios.add(funcionario);
-
         System.out.println("Funcionário cadastrado com sucesso!");
 
     }
@@ -411,7 +463,7 @@ public class Mainn {
     // Livro
     public static void cadastrarLivro() {
 
-        System.out.println("\n Cadastro de Livro: ");
+        System.out.println("\nCadastro de Livro:\n");
 
         System.out.print("Título: ");
         String titulo = input.nextLine();
@@ -421,19 +473,28 @@ public class Mainn {
         int ano_publicacao = input.nextInt();
         System.out.print("Código do livro: ");
         int cdg_livro = input.nextInt();
-        input.nextLine();
+        for (Livro l : livros) {
+            if (l.getCodigoLivro() == cdg_livro) {
+                System.out.println("Erro: já existe um livro com o código " + cdg_livro + "!");
+                return;
+            }
+        }
 
         Livro livro = new Livro(titulo, autor, ano_publicacao, cdg_livro);
         livros.add(livro);
-
-        System.out.println("Livro cadastrado com sucesso!");
-
+        System.out.println("\nLivro cadastrado com sucesso!\n");
     }
 
     // Exemplar
     public static void cadastrarExemplar() {
 
-        System.out.println("\n Cadastro de Exemplar: ");
+        System.out.println("\n");
+
+        for (Livro l : livros) {
+            System.out.println(l.getCodigoLivro() + " - " + l.getTitulo());
+        }
+
+        System.out.println("\nCadastro de Exemplar:\n");
 
         System.out.print("Código do livro: ");
         int cdg_livro = input.nextInt();
@@ -445,11 +506,16 @@ public class Mainn {
                 encontrado = true;
                 System.out.println("Livro encontrado! Digite o código do exemplar: ");
                 int cdg_exemplar = input.nextInt();
+                for (Exemplar e : l.getExemplares()) {
+                    if (e.getcodigoExemplar() == cdg_exemplar) {
+                        System.out.println("Erro: já existe um exemplar com o código " + cdg_exemplar + "!");
+                        return;
+                    }
+                }
 
                 Exemplar exemplar = new Exemplar(cdg_exemplar, true);
                 l.adicionarExemplar(exemplar);
-
-                System.out.println("Exemplar do livro cadastrado com sucesso!");
+                System.out.println("\nExemplar do livro cadastrado com sucesso!\n");
             }
         }
 
@@ -472,21 +538,29 @@ public class Mainn {
         Livro livro1 = new Livro("Dom Casmurro", "Machado de Assis", 1899, 1);
         Livro livro2 = new Livro("O Pequeno Príncipe", "Antoine de Saint-Exupéry", 1943, 2);
         Livro livro3 = new Livro("Dom Quixote", "Miguel de Cervantes", 1605, 3);
-        Exemplar exemplar = new Exemplar(1, true);
-        Emprestimo emprestimo1 = new Emprestimo(exemplar, usuario2, LocalDate.now());
-        Emprestimo emprestimo2 = new Emprestimo(exemplar, usuario1, LocalDate.now());
-        Emprestimo emprestimo3 = new Emprestimo(exemplar, usuario3, LocalDate.now());
+        Exemplar exemplar1 = new Exemplar(1, true);
+        Exemplar exemplar2 = new Exemplar(2, true);
+        Exemplar exemplar3 = new Exemplar(3, true);
+        Exemplar exemplar4 = new Exemplar(4, true);
 
-        livro1.adicionarExemplar(exemplar);
-        livro1.adicionarExemplar(exemplar);
+        livro1.adicionarExemplar(exemplar1);
+        livro1.adicionarExemplar(exemplar2);
+        livro2.adicionarExemplar(exemplar3);
+        livro2.adicionarExemplar(exemplar4);
+
+        Emprestimo emprestimo1 = new Emprestimo(exemplar1, usuario2, LocalDate.now());
+        Emprestimo emprestimo2 = new Emprestimo(exemplar2, usuario1, LocalDate.now());
+        Emprestimo emprestimo3 = new Emprestimo(exemplar3, usuario3, LocalDate.now());
 
         usuarios.add(usuario1);
         usuarios.add(usuario2);
         usuarios.add(usuario3);
         funcionarios.add(funcionario);
+
         livros.add(livro1);
         livros.add(livro2);
         livros.add(livro3);
+
         emprestimos.add(emprestimo1);
         emprestimos.add(emprestimo2);
         emprestimos.add(emprestimo3);
