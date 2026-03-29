@@ -32,7 +32,7 @@ public abstract class Pessoa {
 
     @Override
     public String toString() {
-        return "Nome: " + nome + " | Data de nascimento: " + dataNascimento + " | Telefone: " + telefone;
+        return "Nome: " + nome + "  Data de nascimento: " + dataNascimento + "  Telefone: " + telefone;
     }
 
 }
