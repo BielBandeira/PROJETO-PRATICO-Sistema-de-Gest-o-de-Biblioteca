@@ -1,61 +1,50 @@
-public class Exemplar{
-    private int codigoExemplar;
-    private boolean disponivel;
+import java.time.LocalDate;
 
-    public Exemplar(int codigoExemplar, boolean disponivel) {
-        this.codigoExemplar = codigoExemplar;
-        this.disponivel = disponivel;
-    }
-    public int getcodigoExemplar(){
-        return codigoExemplar; 
-    }
-    public boolean getDisponivel(){
-        return disponivel;
-    }
-    public void setDisponivel(boolean disponivel){
-        this.disponivel = true;
-    }
-}
+public class Emprestimo {
+    private Exemplar exemplar;
+    private Usuario usuario;
+    private LocalDate dataEmprestimo;
+    private LocalDate dataPrevistaDevolucao;
+    private LocalDate dataDevolvida;
 
-public class Livro{
-    private int codigoLivro;
-    private String titulo;
-    private String autor;
-    private int anoDePublicacao;
+    public Emprestimo(Exemplar exemplar, Usuario usuario, LocalDate dataEmprestimo) {
+        this.exemplar = exemplar;
+        this.usuario = usuario;
+        this.dataEmprestimo = dataEmprestimo;
+        this.dataPrevistaDevolucao = dataEmprestimo.plusDays(15);
 
-    private ArrayList <Exemplar> exemplares;
+        exemplar.setDisponivel(false);
+        System.out.println("Exemplar emprestado.");
+    }
 
-    public Livro(String titulo, String autor, int anoDePublicacao, int codigoLivro){
-        this.codigoLivro = codigoLivro;
-        this.titulo = titulo;
-        this.autor = autor;
-        this.anoDePublicacao = anoDePublicacao;
-        this.exemplares = new ArrayList<>();
+    public void devolver() {
+        this.dataDevolvida = LocalDate.now();
+        exemplar.setDisponivel(true);
 
+        System.out.println("Devolução realizada em: " + dataDevolvida);
+        System.out.println("Exemplar disponível.");
     }
-    public int getCodigoLivro(){
-        return codigoLivro;
+
+    public Exemplar getExemplar() {
+        return exemplar;
     }
-    public String getTitulo(){
-        return titulo;
+
+    public Usuario getUsuario(){
+        return usuario;
     }
-    public String getAutor(){
-        return autor;
+
+    public LocalDate getDataEmprestimo() {
+        return dataEmprestimo;
     }
-    public int getAnoDePublicacao(){
-        return anoDePublicacao;
+
+    public LocalDate getDataPrevistaDevolucao() {
+        return dataPrevistaDevolucao;
     }
-    public void adicionarExemplar(Exemplar exemplar){
-        exemplares.add(exemplar);
+
+    public LocalDate prolongarDataDevEmprestimo(int dias) {
+        this.dataPrevistaDevolucao = dataPrevistaDevolucao.plusDays(dias);
+        return this.dataPrevistaDevolucao;
     }
-    public void mostrarLivro(){
-        System.out.println("Código do Livro: " + codigoLivro);
-        System.out.println("Título: " + titulo);
-        System.out.println("Autor: " + autor);
-        System.out.println("Ano de Publicação: " + anoDePublicacao);
-        System.out.println("Exemplares:");
-        for (Exemplar exemplar : exemplares) {
-            System.out.println("- Código do Exemplar: " + exemplar.getcodigoExemplar() + ", Disponível: " + exemplar.getDisponivel());
-        }
-    }
+
+
 }
