@@ -1,6 +1,8 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 //Lara Galvao – 10746133
@@ -21,7 +23,7 @@ public class Main {
 
         inicio();
 
-        int opcao;
+        int opcao = -1;
 
         do {
 
@@ -40,8 +42,13 @@ public class Main {
             System.out.println("12 - Prolongar um empréstimo");
             System.out.println("-----DIGITE 0 PARA SAIR-----");
 
-            opcao = input.nextInt();
-            input.nextLine();
+            try {
+                opcao = input.nextInt();
+                input.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Digite apenas os valores númericos sugeridos! [1] [2] .. [12]");
+                input.nextLine();
+            }
 
             switch (opcao) {
                 case 1:
@@ -276,9 +283,20 @@ public class Main {
                             System.out.print("\n");
                         }
                     }
-                    System.out.print("Usuário: ");
-                    int escolhaU = input.nextInt();
-                    Usuario emp_user = usuarios.get(escolhaU);
+
+                    Usuario emp_user = null;
+                    while (emp_user == null) {
+                        try {
+                            System.out.print("Usuário: ");
+                            int escolhaU = input.nextInt();
+                            emp_user = usuarios.get(escolhaU);
+                        } catch (IndexOutOfBoundsException ex) {
+                            System.out.println("Opção inválida! Escolha um número (usuário) da lista.");
+                        } catch (InputMismatchException ex) {
+                            System.out.println("Digite apenas valores numéricos! [1],[2], etc...");
+                            input.nextLine();
+                        }
+                    }
 
                     // Selecionar data do empréstimo
 
@@ -287,10 +305,15 @@ public class Main {
                     System.out.print("Digite a data do empréstimo: ");
                     String data_emp_string = input.nextLine();
                     DateTimeFormatter formatador_data = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    LocalDate dataEmprestimo = LocalDate.parse(data_emp_string, formatador_data);
+                    try {
+                        LocalDate dataEmprestimo = LocalDate.parse(data_emp_string, formatador_data);
+                        Emprestimo emprestimo = new Emprestimo(exemplar, emp_user, dataEmprestimo);
+                        emprestimos.add(emprestimo);
+                    } catch (DateTimeParseException ex) {
+                        System.out.println("Formato inserido inválido! O correto é dd/MM/yyyy");
+                        return;
+                    }
 
-                    Emprestimo emprestimo = new Emprestimo(exemplar, emp_user, dataEmprestimo);
-                    emprestimos.add(emprestimo);
                 }
 
             }
@@ -418,20 +441,23 @@ public class Main {
         String data_nasc = input.nextLine();
         System.out.print("Telefone: ");
         String telefone = input.nextLine();
-        System.out.print("Registro de usuário (ID único): ");
-        int id = input.nextInt();
-        for (Usuario u : usuarios) {
-            if (u.getId() == id) {
-                System.out.println("Erro: já existe um usuário com o ID " + id + "!");
-                return;
+        try {
+            System.out.print("Registro de usuário (ID único): ");
+            int id = input.nextInt();
+            for (Usuario u : usuarios) {
+                if (u.getId() == id) {
+                    System.out.println("Erro: já existe um usuário com o ID " + id + "!");
+                    return;
+                }
+
             }
 
+            Usuario usuario = new Usuario(nome, data_nasc, telefone, id);
+            usuarios.add(usuario);
+            System.out.println("Usuário cadastrado com sucesso!");
+        } catch (InputMismatchException e) {
+            System.out.println("O ID do usuário deve ser um número inteiro! [1],[2], etc...");
         }
-
-        Usuario usuario = new Usuario(nome, data_nasc, telefone, id);
-        usuarios.add(usuario);
-        System.out.println("Usuário cadastrado com sucesso!");
-
     }
 
     // Funcionario
@@ -444,19 +470,23 @@ public class Main {
         String data_nasc = input.nextLine();
         System.out.print("Telefone: ");
         String telefone = input.nextLine();
-        System.out.print("Registro de Funcionário (ID único): ");
-        int id = input.nextInt();
-        for (Funcionario f : funcionarios) {
-            if (f.getId() == id) {
-                System.out.println("Erro: já existe um funcionário com o ID " + id + "!");
-                return;
+        try {
+            System.out.print("Registro de Funcionário (ID único): ");
+            int id = input.nextInt();
+            for (Funcionario f : funcionarios) {
+                if (f.getId() == id) {
+                    System.out.println("Erro: já existe um funcionário com o ID " + id + "!");
+                    return;
+                }
+
             }
 
+            Funcionario funcionario = new Funcionario(nome, data_nasc, telefone, id);
+            funcionarios.add(funcionario);
+            System.out.println("Funcionário cadastrado com sucesso!");
+        } catch (InputMismatchException e) {
+            System.out.println("O ID do usuário deve ser um número inteiro! [1],[2], etc...");
         }
-
-        Funcionario funcionario = new Funcionario(nome, data_nasc, telefone, id);
-        funcionarios.add(funcionario);
-        System.out.println("Funcionário cadastrado com sucesso!");
 
     }
 
@@ -471,18 +501,22 @@ public class Main {
         String autor = input.nextLine();
         System.out.print("Ano de publicação: ");
         int ano_publicacao = input.nextInt();
-        System.out.print("Código do livro: ");
-        int cdg_livro = input.nextInt();
-        for (Livro l : livros) {
-            if (l.getCodigoLivro() == cdg_livro) {
-                System.out.println("Erro: já existe um livro com o código " + cdg_livro + "!");
-                return;
+        try {
+            System.out.print("Código do livro: ");
+            int cdg_livro = input.nextInt();
+            for (Livro l : livros) {
+                if (l.getCodigoLivro() == cdg_livro) {
+                    System.out.println("Erro: já existe um livro com o código " + cdg_livro + "!");
+                    return;
+                }
             }
-        }
 
-        Livro livro = new Livro(titulo, autor, ano_publicacao, cdg_livro);
-        livros.add(livro);
-        System.out.println("\nLivro cadastrado com sucesso!\n");
+            Livro livro = new Livro(titulo, autor, ano_publicacao, cdg_livro);
+            livros.add(livro);
+            System.out.println("\nLivro cadastrado com sucesso!\n");
+        } catch (InputMismatchException e) {
+            System.out.println("O ID do usuário deve ser um número inteiro! [1],[2], etc...");
+        }
     }
 
     // Exemplar
@@ -504,18 +538,22 @@ public class Main {
         for (Livro l : livros) {
             if (l.getCodigoLivro() == cdg_livro) {
                 encontrado = true;
-                System.out.println("Livro encontrado! Digite o código do exemplar: ");
-                int cdg_exemplar = input.nextInt();
-                for (Exemplar e : l.getExemplares()) {
-                    if (e.getcodigoExemplar() == cdg_exemplar) {
-                        System.out.println("Erro: já existe um exemplar com o código " + cdg_exemplar + "!");
-                        return;
+                try {
+                    System.out.println("Livro encontrado! Digite o código do exemplar: ");
+                    int cdg_exemplar = input.nextInt();
+                    for (Exemplar e : l.getExemplares()) {
+                        if (e.getcodigoExemplar() == cdg_exemplar) {
+                            System.out.println("Erro: já existe um exemplar com o código " + cdg_exemplar + "!");
+                            return;
+                        }
                     }
-                }
 
-                Exemplar exemplar = new Exemplar(cdg_exemplar, true);
-                l.adicionarExemplar(exemplar);
-                System.out.println("\nExemplar do livro cadastrado com sucesso!\n");
+                    Exemplar exemplar = new Exemplar(cdg_exemplar, true);
+                    l.adicionarExemplar(exemplar);
+                    System.out.println("\nExemplar do livro cadastrado com sucesso!\n");
+                } catch (InputMismatchException e) {
+                    System.out.println("O ID do usuário deve ser um número inteiro! [1],[2], etc...");
+                }
             }
         }
 
