@@ -66,6 +66,7 @@ class Livro{
         System.out.println("Título: " + titulo);
         System.out.println("Autor: " + autor);
         System.out.println("Ano de Publicação: " + anoDePublicacao);
+        System.out.println(">>>>>");
         System.out.println("Exemplares:");
         for (Exemplar exemplar : exemplares) {
             System.out.println("- Código do Exemplar: " + exemplar.getcodigoExemplar() + ", Disponível: " + exemplar.getDisponivel());
